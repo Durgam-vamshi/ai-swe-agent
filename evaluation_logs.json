@@ -1,0 +1,317 @@
+[
+  {
+    "timestamp": "2026-04-14 03:54:00.014419",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "10\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 00:59:16.910784",
+    "status": "failed",
+    "file": "test.py",
+    "attempts": 3,
+    "success": false,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 01:08:11.885971",
+    "status": "failed",
+    "file": "test.py",
+    "attempts": 3,
+    "success": false,
+    "stdout": "",
+    "stderr": "  File \"C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\sandbox\\test.py\", line 6\n    ARGS:\n         ^\nSyntaxError: invalid syntax\n"
+  },
+  {
+    "timestamp": "2026-04-17 01:19:49.064817",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "True\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 01:34:03.938025",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "True\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 01:45:03.949310",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "0.25\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 01:51:09.625434",
+    "status": "success",
+    "file": "debug_test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "The total amount including tax is: $108\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 03:18:51.654400",
+    "status": "success",
+    "file": "debug_test.py",
+    "attempts": 3,
+    "success": true,
+    "stdout": "The total amount including tax is: $108.0\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 03:23:51.505961",
+    "status": "success",
+    "file": "loop.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "0\n1\n2\n3\n4\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 03:32:14.838064",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "0.25\n",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 03:37:02.551198",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 03:44:19.450551",
+    "status": "success",
+    "file": "env.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "Current Working Directory: C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\nEnvironment Variables:\nALLUSERSPROFILE: C:\\ProgramData\nAPPDATA: C:\\Users\\user\\AppData\\Roaming\nBUNDLED_DEBUGPY_PATH: c:\\Users\\user\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\libs\\debugpy\nCHROME_CRASHPAD_PIPE_NAME: \\\\.\\pipe\\crashpad_7172_YPEFQRLYHENVHDNJ\nCOLORTERM: truecolor\nCOMMONPROGRAMFILES: C:\\Program Files\\Common Files\nCOMMONPROGRAMFILES(X86): C:\\Program Files (x86)\\Common Files\nCOMMONPROGRAMW6432: C:\\Program Files\\Common Files\nCOMPUTERNAME: VAMSHIPC\nCOMSPEC: C:\\WINDOWS\\system32\\cmd.exe\nDOCKER_HOST: tcp://localhost:2375\nDRIVERDATA: C:\\Windows\\System32\\Drivers\\DriverData\nEFC_7072_1592913036: 1\nGIT_ASKPASS: c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\vscode.git\\askpass\\493597c785d4c5cb\\askpass.sh\nHOMEDRIVE: C:\nHOMEPATH: \\Users\\user\nLANG: en_US.UTF-8\nLOCALAPPDATA: C:\\Users\\user\\AppData\\Local\nLOGONSERVER: \\\\VAMSHIPC\nNUMBER_OF_PROCESSORS: 8\nONEDRIVE: C:\\Users\\user\\OneDrive\nOS: Windows_NT\nPATH: C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\.venv\\Scripts;C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\.venv/Scripts;c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\debugCommand;c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\copilotCli;C:\\Users\\user\\AppData\\Local\\Programs\\Microsoft VS Code;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin;C:\\Program Files\\nodejs\\;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\Users\\user\\.local\\bin;C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\;C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\;C:\\Users\\user\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\user\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\user\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\user\\AppData\\Local\\Python\\bin;C:\\Program Files (x86)\\MongoDB Atlas CLI\\;C:\\Users\\user\\AppData\\Local\\Programs\\Antigravity\\bin;C:\\ffmpeg\\bin;C:\\yt-dlp;C:\\Users\\user\\AppData\\Local\\Programs\\Ollama;C:\\Users\\user\\AppData\\Roaming\\npm;C:\\Users\\user\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin;c:\\Users\\user\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts\nPATHEXT: .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL\nPROCESSOR_ARCHITECTURE: AMD64\nPROCESSOR_IDENTIFIER: Intel64 Family 6 Model 142 Stepping 12, GenuineIntel\nPROCESSOR_LEVEL: 6\nPROCESSOR_REVISION: 8e0c\nPROGRAMDATA: C:\\ProgramData\nPROGRAMFILES: C:\\Program Files\nPROGRAMFILES(X86): C:\\Program Files (x86)\nPROGRAMW6432: C:\\Program Files\nPSEXECUTIONPOLICYPREFERENCE: RemoteSigned\nPSMODULEPATH: C:\\Users\\user\\Documents\\WindowsPowerShell\\Modules;C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules\nPUBLIC: C:\\Users\\Public\nPYDEVD_DISABLE_FILE_VALIDATION: 1\nPYTHONSTARTUP: c:\\Users\\user\\AppData\\Roaming\\Code\\User\\workspaceStorage\\d4dd2401352c0e5c4c074a47f842bb69\\ms-python.python\\pythonrc.py\nPYTHON_BASIC_REPL: 1\nSESSIONNAME: Console\nSYSTEMDRIVE: C:\nSYSTEMROOT: C:\\WINDOWS\nTEMP: C:\\Users\\user\\AppData\\Local\\Temp\nTERM_PROGRAM: vscode\nTERM_PROGRAM_VERSION: 1.115.0\nTMP: C:\\Users\\user\\AppData\\Local\\Temp\nUSERDOMAIN: VAMSHIPC\nUSERDOMAIN_ROAMINGPROFILE: VAMSHIPC\nUSERNAME: user\nUSERPROFILE: C:\\Users\\user\nUV: C:\\Users\\user\\.local\\bin\\uv.exe\nUV_RUN_RECURSION_DEPTH: 1\nVIRTUAL_ENV: C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\.venv\nVIRTUAL_ENV_PROMPT: backend\nVSCODE_DEBUGPY_ADAPTER_ENDPOINTS: c:\\Users\\user\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\.noConfigDebugAdapterEndpoints\\endpoint-6735d2c2b30c74e4.txt\nVSCODE_GIT_ASKPASS_EXTRA_ARGS: \nVSCODE_GIT_ASKPASS_MAIN: c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\vscode.git\\askpass\\493597c785d4c5cb\\askpass-main.js\nVSCODE_GIT_ASKPASS_NODE: C:\\Users\\user\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe\nVSCODE_GIT_IPC_HANDLE: \\\\.\\pipe\\vscode-git-7bbef7089c-sock\nVSCODE_INJECTION: 1\nVSCODE_PYTHON_AUTOACTIVATE_GUARD: 1\nWINDIR: C:\\WINDOWS\nZES_ENABLE_SYSMAN: 1\nSystem Information:\nSystem: Windows\nNode Name: vamshiPC",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 03:51:28.737366",
+    "status": "success",
+    "file": "C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\sandbox\\test.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "Hello World",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 13:09:20.491048",
+    "status": "success",
+    "file": "app/main.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-17 13:22:13.842026",
+    "status": "success",
+    "file": "debug_test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "The total amount including tax is: $ 108.0",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 02:33:30.272654",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "Hello World",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 02:42:39.552458",
+    "status": "success",
+    "file": "loop.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "0\n1\n2\n3\n4",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 02:51:36.184289",
+    "status": "success",
+    "file": "check_even.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 03:20:04.260709",
+    "status": "failed",
+    "file": "debug_test.py",
+    "attempts": 3,
+    "success": false,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 03:26:57.144972",
+    "status": "success",
+    "file": "/home/user/check_even.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 03:30:36.760057",
+    "status": "success",
+    "file": "./check_even.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-18 03:39:18.759033",
+    "status": "success",
+    "file": "/path/to/check_even.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-20 00:00:05.512138",
+    "status": "success",
+    "file": "debug_test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "The total amount including tax is: $108.00",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-20 00:06:52.745616",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "Hello, world!",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-20 00:51:14.485979",
+    "status": "success",
+    "file": "env.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "Current Working Directory: C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\nEnvironment Variables:\nALLUSERSPROFILE: C:\\ProgramData\nAPPDATA: C:\\Users\\user\\AppData\\Roaming\nCHROME_CRASHPAD_PIPE_NAME: \\\\.\\pipe\\crashpad_920_FSTAHAMEZHEXARKN\nCOMMONPROGRAMFILES: C:\\Program Files\\Common Files\nCOMMONPROGRAMFILES(X86): C:\\Program Files (x86)\\Common Files\nCOMMONPROGRAMW6432: C:\\Program Files\\Common Files\nCOMPUTERNAME: VAMSHIPC\nCOMSPEC: C:\\WINDOWS\\system32\\cmd.exe\nDOCKER_HOST: tcp://localhost:2375\nDRIVERDATA: C:\\Windows\\System32\\Drivers\\DriverData\nEFC_7000_1262719628: 1\nEFC_7000_1592913036: 1\nEFC_7000_2283032206: 1\nEFC_7000_2775293581: 1\nEFC_7000_3789132940: 1\nFPS_BROWSER_APP_PROFILE_STRING: Internet Explorer\nFPS_BROWSER_USER_PROFILE_STRING: Default\nHOMEDRIVE: C:\nHOMEPATH: \\Users\\user\nLOCALAPPDATA: C:\\Users\\user\\AppData\\Local\nLOGONSERVER: \\\\VAMSHIPC\nNUMBER_OF_PROCESSORS: 8\nONEDRIVE: C:\\Users\\user\\OneDrive\nOS: Windows_NT\nPATH: C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\.venv/Scripts;c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\debugCommand;c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\copilotCli;C:\\Users\\user\\AppData\\Local\\Programs\\Microsoft VS Code;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin;C:\\Program Files\\nodejs\\;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\Users\\user\\.local\\bin;C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\;C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\;C:\\Users\\user\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\user\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\user\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\user\\AppData\\Local\\Python\\bin;C:\\Program Files (x86)\\MongoDB Atlas CLI\\;C:\\Users\\user\\AppData\\Local\\Programs\\Antigravity\\bin;C:\\ffmpeg\\bin;C:\\yt-dlp;C:\\Users\\user\\AppData\\Local\\Programs\\Ollama;C:\\Users\\user\\AppData\\Roaming\\npm;C:\\Users\\user\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin;c:\\Users\\user\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts\nPATHEXT: .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL\nPROCESSOR_ARCHITECTURE: AMD64\nPROCESSOR_IDENTIFIER: Intel64 Family 6 Model 142 Stepping 12, GenuineIntel\nPROCESSOR_LEVEL: 6\nPROCESSOR_REVISION: 8e0c\nPROGRAMDATA: C:\\ProgramData\nPROGRAMFILES: C:\\Program Files\nPROGRAMFILES(X86): C:\\Program Files (x86)\nPROGRAMW6432: C:\\Program Files\nPSEXECUTIONPOLICYPREFERENCE: RemoteSigned\nPSMODULEPATH: C:\\Users\\user\\Documents\\WindowsPowerShell\\Modules;C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules\nPUBLIC: C:\\Users\\Public\nSESSIONNAME: Console\nSYSTEMDRIVE: C:\nSYSTEMROOT: C:\\WINDOWS\nTEMP: C:\\Users\\user\\AppData\\Local\\Temp\nTMP: C:\\Users\\user\\AppData\\Local\\Temp\nUSERDOMAIN: VAMSHIPC\nUSERDOMAIN_ROAMINGPROFILE: VAMSHIPC\nUSERNAME: user\nUSERPROFILE: C:\\Users\\user\nVIRTUAL_ENV: C:\\Users\\user\\Desktop\\githubaiagent\\ai-swe-agent\\backend\\.venv\nVIRTUAL_ENV_PROMPT: backend\nVSCODE_PYTHON_AUTOACTIVATE_GUARD: 1\nWINDIR: C:\\WINDOWS\nZES_ENABLE_SYSMAN: 1\nTERM_PROGRAM: vscode\nTERM_PROGRAM_VERSION: 1.116.0\nLANG: en_US.UTF-8\nCOLORTERM: truecolor\nGIT_ASKPASS: c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\vscode.git\\askpass\\493597c785d4c5cb\\askpass.sh\nVSCODE_GIT_ASKPASS_NODE: C:\\Users\\user\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe\nVSCODE_GIT_ASKPASS_EXTRA_ARGS: \nVSCODE_GIT_ASKPASS_MAIN: c:\\Users\\user\\AppData\\Roaming\\Code\\User\\globalStorage\\vscode.git\\askpass\\493597c785d4c5cb\\askpass-main.js\nVSCODE_GIT_IPC_HANDLE: \\\\.\\pipe\\vscode-git-7bbef7089c-sock\nPYDEVD_DISABLE_FILE_VALIDATION: 1\nVSCODE_DEBUGPY_ADAPTER_ENDPOINTS: c:\\Users\\user\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\.noConfigDebugAdapterEndpoints\\endpoint-6735d2c2b30c74e4.txt\nBUNDLED_DEBUGPY_PATH: c:\\Users\\user\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\libs\\debugpy\nPYTHONSTARTUP: c:\\Users\\user\\AppData\\Roaming\\Code\\User\\workspaceStorage\\d4dd2401352c0e5c4c074a47f842bb69\\ms-python.python\\pythonrc.py\nPYTHON_BASIC_REPL: 1\nVSCODE_INJECTION: 1\nSystem Information:\nSystem: Windows\nNode Name: vamshiPC",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-20 19:57:17.667979",
+    "status": "success",
+    "file": "loop.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "0\n1\n2\n3\n4",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 02:22:21.672076",
+    "status": "success",
+    "file": "debug_test.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "The total amount including tax is: $108.00",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 02:32:13.562409",
+    "status": "success",
+    "file": "loop.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "0\n1\n2\n3\n4",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 02:55:05.213496",
+    "status": "success",
+    "file": "app\\main.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 12:39:11.755513",
+    "status": "success",
+    "file": "hello.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 12:58:01.130229",
+    "status": "success",
+    "file": "hello.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 13:43:31.081599",
+    "status": "success",
+    "file": "hello.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 13:49:16.683202",
+    "status": "success",
+    "file": "test.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "Hello, Gemini!",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-21 14:42:20.292370",
+    "status": "success",
+    "file": "hello.py",
+    "attempts": 2,
+    "success": true,
+    "stdout": "Hello, Gemini!",
+    "stderr": ""
+  },
+  {
+    "timestamp": "2026-04-22 00:07:03.923191",
+    "status": "success",
+    "file": "check_even.py",
+    "attempts": 1,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  }
+]

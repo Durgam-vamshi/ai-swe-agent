@@ -5,8 +5,6 @@ from app.utils.logger import log
 import tempfile
 
 
-
-
 def extract_missing_module(stderr: str):
     match = re.search(r"No module named '(.+?)'", stderr)
     if match:

@@ -1,3 +1,5 @@
+
+
 # import os
 # import re
 # import time
@@ -24,7 +26,7 @@
 #     if not base_path:
 #         return {"final_status": "failed", "error": "Missing base path"}
 
-#     # Discovery
+#     # 1. Discovery
 #     if kwargs.get("code") and file_name:
 #         target_files = [file_name]
 #         with open(os.path.join(base_path, file_name), "w", encoding="utf-8") as f:
@@ -34,7 +36,7 @@
     
 #     target_files = target_files[:MAX_FILES]
 
-#     # Investigation Detection
+#     # 2. Early Return for Investigation
 #     INVESTIGATION_WORDS = ["investigate", "identify", "locate", "analyze"]
 #     if any(word in issue.lower() for word in INVESTIGATION_WORDS):
 #         log(
@@ -46,11 +48,13 @@
 #             "target_files": target_files
 #         }
 
+#     # 3. Execution Loop (Repair Mode Only)
 #     attempt = 1
 #     while attempt <= max_retries:
 #         try:
 #             if task_id: increment_attempt(task_id)
             
+#             # Prepare context
 #             combined_code, context = [], {}
 #             for target in target_files:
 #                 path = os.path.join(base_path, target)
@@ -58,6 +62,9 @@
 #                     content = f.read()[:MAX_FILE_CHARS]
 #                 combined_code.append(f"# FILE: {target}\n{content}")
 #                 context[target] = build_repository_context(target_file=path, base_path=base_path)
+            
+#             # Debug log only visible in repair mode
+#             log(task_id, f"DEBUG current_code_length={len(''.join(combined_code))}")
 
 #             # Generate and Parse Fix
 #             response = generate_fix(issue=issue, code="\n\n".join(combined_code), file_name=", ".join(target_files), context=context, task_id=task_id)
@@ -68,7 +75,7 @@
 #             for filename, full_code in parsed_files.items():
 #                 target_path = os.path.join(base_path, filename)
 #                 with open(target_path, "w", encoding="utf-8") as f:
-#                     f.write(full_code) 
+#                     f.write(full_code)
 #                 log(task_id, f"✅ Fully overwritten: {filename}")
 
 #             # Verify (Run test)
@@ -86,6 +93,7 @@
 #     return {"final_status": "failed"}
 
 
+
 import os
 import re
 import time
@@ -95,7 +103,7 @@ from app.services.bug_locator import locate_bug_files
 from app.agent.nodes.output_parser import parse_llm_response
 from app.agent.nodes.multi_file_parser import parse_multi_file
 from app.services.context_builder import build_repository_context
-from app.services.docker_runner import run_python_file
+from app.services.docker_runner import run_python_file, run_repo_tests
 from app.services.llm_client import generate_fix
 from app.services.fix_scope_validator import validate_fix_scope
 from app.store.task_store import increment_attempt
@@ -113,10 +121,11 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
         return {"final_status": "failed", "error": "Missing base path"}
 
     # 1. Discovery
-    if kwargs.get("code") and file_name:
+    incoming_code = kwargs.get("code")
+    if incoming_code and file_name:
         target_files = [file_name]
         with open(os.path.join(base_path, file_name), "w", encoding="utf-8") as f:
-            f.write(kwargs.get("code"))
+            f.write(incoming_code)
     else:
         target_files = locate_bug_files(issue=issue, target_file=file_name or "", base_path=base_path) or get_python_files(base_path)[:MAX_FILES]
     
@@ -164,9 +173,14 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
                     f.write(full_code)
                 log(task_id, f"✅ Fully overwritten: {filename}")
 
-            # Verify (Run test)
-            test_file = list(parsed_files.keys())[0]
-            result = run_python_file(base_path, test_file, extract_args(response), task_id)
+            # 4. Verify (Run test based on mode)
+            if incoming_code:
+                # Use temp file runner for isolated code snippets
+                test_file = list(parsed_files.keys())[0]
+                result = run_python_file(base_path, f"temp_{test_file}", extract_args(response), task_id)
+            else:
+                # Use repository-wide test suite
+                result = run_repo_tests(base_path, task_id)
             
             if result.get("return_code") == 0:
                 return {"final_status": "success", "files_updated": list(parsed_files.keys())}
@@ -177,9 +191,6 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             attempt += 1
 
     return {"final_status": "failed"}
-
-
-
 
 
 

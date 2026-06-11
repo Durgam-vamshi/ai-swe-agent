@@ -1,14 +1,40 @@
 
 
+
+
+
+import json
+import os
+import uuid
+
+# Set path relative to this file
+TASK_FILE = os.path.join(
+    os.path.dirname(__file__),
+    "task_store.json"
+)
+
 tasks = {}
 
+# =========================
+# 💾 PERSISTENCE
+# =========================
+def save_tasks():
+    with open(TASK_FILE, "w") as f:
+        json.dump(tasks, f)
+
+def load_tasks():
+    global tasks
+    if os.path.exists(TASK_FILE):
+        with open(TASK_FILE, "r") as f:
+            tasks = json.load(f)
+
+# Load existing data on startup
+load_tasks()
 
 # =========================
 # 🆕 CREATE TASK
 # =========================
 def create_task():
-    import uuid
-
     task_id = str(uuid.uuid4())
 
     tasks[task_id] = {
@@ -25,7 +51,8 @@ def create_task():
             "logs": []
         }
     }
-
+    
+    save_tasks()
     return task_id
 
 
@@ -43,6 +70,8 @@ def update_task(task_id, data=None, **kwargs):
     # 🔥 Case 2: keyword args passed
     if kwargs:
         tasks[task_id].update(kwargs)
+        
+    save_tasks()
 
 
 # =========================
@@ -51,6 +80,7 @@ def update_task(task_id, data=None, **kwargs):
 def increment_attempt(task_id):
     if task_id in tasks:
         tasks[task_id]["attempt"] += 1
+        save_tasks()
 
 
 # =========================
@@ -66,6 +96,7 @@ def get_task(task_id):
 def add_log(task_id, message):
     if task_id in tasks:
         tasks[task_id]["logs"].append(str(message))
+        save_tasks()
 
 
 def get_logs(task_id):
@@ -80,6 +111,23 @@ def get_logs(task_id):
 # =========================
 def get_all_tasks():
     return list(tasks.values())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

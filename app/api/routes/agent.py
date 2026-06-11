@@ -13,28 +13,49 @@ from app.services.repo_cloner import clone_repo
 from app.services.code_search import get_python_files
 from app.store.task_store import create_task, get_task, get_all_tasks, update_task
 from app.worker.agent_worker import run_agent_async
+# from typing import Optional
 import json
-
 from fastapi.responses import StreamingResponse
 import time
-
 # ✅ ADD THIS IMPORT (THIS IS YOUR BUG)
 from app.store.task_store import get_logs, get_task
 from typing import Optional
+from pydantic import BaseModel, model_validator
+
+
 
 
 router = APIRouter()
 
 
-# class AgentRequest(BaseModel):
-#     code: str
-#     issue: str
-#     file_name: str = "test.py"
 
 class AgentRequest(BaseModel):
     issue: str
     code: Optional[str] = None
     repo_url: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_request(self):
+        if not self.code and not self.repo_url:
+            raise ValueError(
+                "Either 'code' or 'repo_url' must be provided."
+            )
+
+        if self.code and self.repo_url:
+            raise ValueError(
+                "Provide either 'code' or 'repo_url', not both."
+            )
+
+        return self
+
+
+
+
+# class AgentRequest(BaseModel):
+#     issue: str
+#     code: Optional[str] = None
+#     file_name: Optional[str] = None
+#     repo_url: Optional[str] = None
 
 
 class RepoRequest(BaseModel):
@@ -127,3 +148,4 @@ def stream_logs(task_id: str):
             "X-Accel-Buffering": "no"
         }
     )
+

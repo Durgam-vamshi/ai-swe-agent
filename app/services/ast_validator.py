@@ -17,6 +17,7 @@ def extract_structure(code: str):
     return {
         "classes": classes,
         "functions": functions,
+        "function_count": len(functions),
     }
 
 
@@ -37,12 +38,31 @@ def validate_no_regression(original: str, fixed: str):
         except Exception:
             # If the original code was broken/unparseable (e.g., missing ':'),
             # we fallback to a regex match to find structural functions or assume empty baseline
-            old = {"classes": set(), "functions": set()}
-            # Simple regex search to catch function definitions from broken original code
-            for func_name in re.findall(r"def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", original):
-                old["functions"].add(func_name)
-            for class_name in re.findall(r"class\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*[:\(]", original):
-                old["classes"].add(class_name)
+            old_functions = set(re.findall(r"def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", original))
+            old_classes = set(re.findall(r"class\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*[:\(]", original))
+            
+            old = {
+                "classes": old_classes,
+                "functions": old_functions,
+                "function_count": len(old_functions)
+            }
+
+        # Change #1: Detect massive file truncation
+        old_lines = len(original.splitlines())
+        new_lines = len(fixed.splitlines())
+
+        if old_lines > 50 and new_lines < old_lines * 0.7:
+            return {
+                "valid": False,
+                "error": f"Suspicious file truncation detected. Original={old_lines}, New={new_lines}"
+            }
+
+        # Change #2: Track Function Count
+        if new["function_count"] < old["function_count"]:
+            return {
+                "valid": False,
+                "error": "Function deletion detected"
+            }
 
         removed_classes = old["classes"] - new["classes"]
         removed_functions = old["functions"] - new["functions"]

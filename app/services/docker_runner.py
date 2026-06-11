@@ -1,7 +1,200 @@
+
+
+
+# import subprocess
+# import os
+# import re
+# from app.utils.logger import log
+# import tempfile
+
+
+
+# # =========================
+# # 🔍 EXTRACT MISSING MODULE
+# # =========================
+# def extract_missing_module(stderr: str):
+#     match = re.search(r"No module named '(.+?)'", stderr)
+#     if match:
+#         return match.group(1)
+#     return None
+
+
+# # =========================
+# # 💻 LOCAL EXECUTION ONLY (FIXED)
+# # =========================
+# def run_python_local(base_path: str, file_name: str, args=None, task_id=None):
+#     try:
+#         file_path = os.path.join(base_path, file_name)
+
+#         if args is None:
+#             args = []
+
+#         log(task_id, f"⚙️ Running local file: {file_name}")
+
+#         process = subprocess.run(
+#             ["python", file_path, *args],
+#             capture_output=True,
+#             text=True,
+#             timeout=5
+#         )
+
+#         stdout = process.stdout.strip() if process.stdout else ""
+#         stderr = process.stderr.strip() if process.stderr else ""
+#         return_code = process.returncode
+
+#         # ✅ LOGS
+#         if stdout:
+#             log(task_id, f"💻 STDOUT:\n{stdout}")
+#         else:
+#             log(task_id, "💻 STDOUT: (empty)")
+
+#         if stderr:
+#             log(task_id, f"💻 STDERR:\n{stderr}")
+#         else:
+#             log(task_id, "💻 STDERR: (empty)")
+
+#         log(task_id, f"💻 RETURN CODE: {return_code}")
+
+#         # ✅ CRITICAL FIX → ALWAYS RETURN return_code
+#         return {
+#             "success": return_code == 0,
+#             "stdout": stdout,
+#             "stderr": stderr,
+#             "return_code": return_code
+#         }
+
+#     except subprocess.TimeoutExpired:
+#         log(task_id, "⏱️ Execution timed out")
+
+#         return {
+#             "success": False,
+#             "stdout": "",
+#             "stderr": "Execution timed out",
+#             "return_code": 1
+#         }
+
+#     except Exception as e:
+#         log(task_id, f"💥 Execution error: {str(e)}")
+
+#         return {
+#             "success": False,
+#             "stdout": "",
+#             "stderr": str(e),
+#             "return_code": 1
+#         }
+
+
+# # =========================
+# # 🔁 MAIN EXECUTION FLOW (FIXED)
+# # =========================
+ 
+
+
+# def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
+#     try:
+
+#         if args is None:
+#             args = []
+
+#         file_path = os.path.abspath(
+#             os.path.join(base_path, file_name)
+#         )
+
+#         log(task_id, f"🐳 Running in Docker: {file_name}")
+
+#         process = subprocess.run(
+#             [
+#                 "docker",
+#                 "run",
+#                 "--rm",
+#                 "--memory=256m",
+#                 "--cpus=1",
+#                 "-v",
+#                 f"{os.path.dirname(file_path)}:/app",
+#                 "python:3.12-slim",
+#                 "python",
+#                 f"/app/{file_name}",
+#                 *args
+#             ],
+#             capture_output=True,
+#             text=True,
+#             timeout=10
+#         )
+
+#         stdout = process.stdout.strip()
+#         stderr = process.stderr.strip()
+
+#         return {
+#             "success": process.returncode == 0,
+#             "stdout": stdout,
+#             "stderr": stderr,
+#             "return_code": process.returncode
+#         }
+
+#     except subprocess.TimeoutExpired:
+#         return {
+#             "success": False,
+#             "stdout": "",
+#             "stderr": "Execution timed out",
+#             "return_code": 1
+#         }
+
+#     except Exception as e:
+#         return {
+#             "success": False,
+#             "stdout": "",
+#             "stderr": str(e),
+#             "return_code": 1
+#         }
+
+
+
+# def run_python_file(base_path: str, file_name: str, args=None, task_id=None):
+#     """
+#     🚫 Docker disabled
+#     ✅ Local execution with full logging
+#     """
+
+#     if args is None:
+#         args = []
+
+#     log(task_id, "🐳 Using Docker sandbox execution")
+
+#     result = run_python_docker(base_path, file_name, args, task_id)
+
+#     # ✅ LOG SUCCESS/FAILURE
+#     if result.get("return_code") == 0:
+#         log(task_id, "✅ Code executed successfully")
+#     else:
+#         log(task_id, "❌ Code execution failed")
+
+#     # ✅ CRITICAL FIX → RETURN return_code ALSO
+#     return {
+#         "used": "docker",
+#         "success": result.get("success"),
+#         "stdout": result.get("stdout"),
+#         "stderr": result.get("stderr"),
+#         "return_code": result.get("return_code")
+#     }
+
+
+
+
+
+
+
+
+
+
+
+
 import subprocess
 import os
 import re
 from app.utils.logger import log
+import tempfile
+
+
 
 # =========================
 # 🔍 EXTRACT MISSING MODULE
@@ -12,12 +205,14 @@ def extract_missing_module(stderr: str):
         return match.group(1)
     return None
 
+
 # =========================
-# 💻 LOCAL EXECUTION
+# 💻 LOCAL EXECUTION ONLY (FIXED)
 # =========================
 def run_python_local(base_path: str, file_name: str, args=None, task_id=None):
     try:
         file_path = os.path.join(base_path, file_name)
+
         if args is None:
             args = []
 
@@ -30,47 +225,80 @@ def run_python_local(base_path: str, file_name: str, args=None, task_id=None):
             timeout=5
         )
 
+        stdout = process.stdout.strip() if process.stdout else ""
+        stderr = process.stderr.strip() if process.stderr else ""
+        return_code = process.returncode
+
+        # ✅ LOGS
+        if stdout:
+            log(task_id, f"💻 STDOUT:\n{stdout}")
+        else:
+            log(task_id, "💻 STDOUT: (empty)")
+
+        if stderr:
+            log(task_id, f"💻 STDERR:\n{stderr}")
+        else:
+            log(task_id, "💻 STDERR: (empty)")
+
+        log(task_id, f"💻 RETURN CODE: {return_code}")
+
+        # ✅ CRITICAL FIX → ALWAYS RETURN return_code
         return {
-            "success": process.returncode == 0,
-            "stdout": process.stdout.strip() if process.stdout else "",
-            "stderr": process.stderr.strip() if process.stderr else "",
-            "return_code": process.returncode
+            "success": return_code == 0,
+            "stdout": stdout,
+            "stderr": stderr,
+            "return_code": return_code
         }
+
+    except subprocess.TimeoutExpired:
+        log(task_id, "⏱️ Execution timed out")
+
+        return {
+            "success": False,
+            "stdout": "",
+            "stderr": "Execution timed out",
+            "return_code": 1
+        }
+
     except Exception as e:
-        return {"success": False, "stdout": "", "stderr": str(e), "return_code": 1}
+        log(task_id, f"💥 Execution error: {str(e)}")
+
+        return {
+            "success": False,
+            "stdout": "",
+            "stderr": str(e),
+            "return_code": 1
+        }
+
 
 # =========================
-# 🐳 DOCKER EXECUTION (FIXED)
+# 🔁 MAIN EXECUTION FLOW (FIXED)
 # =========================
-def run_python_docker(base_path: str, file_name: str, args=None, task_id=None, is_repository=False):
-    if args is None:
-        args = []
 
-    file_path = os.path.abspath(os.path.join(base_path, file_name))
+def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
+    try:
 
-    if is_repository:
-        log(task_id, "📦 Repository mode validation")
-        # Validate syntax and imports using py_compile
-        process = subprocess.run(
-            [
-                "docker", "run", "--rm", "--memory=256m", "--cpus=1",
-                "-v", f"{base_path}:/app",
-                "python:3.12-slim",
-                "python", "-m", "py_compile", f"/app/{file_name}"
-            ],
-            capture_output=True,
-            text=True,
-            timeout=10
+        if args is None:
+            args = []
+
+        file_path = os.path.abspath(
+            os.path.join(base_path, file_name)
         )
-    else:
-        log(task_id, "🧪 Snippet mode execution")
-        # Standard execution for standalone snippets
+
+        log(task_id, f"🐳 Running in Docker: {file_name}")
+
         process = subprocess.run(
             [
-                "docker", "run", "--rm", "--memory=256m", "--cpus=1",
-                "-v", f"{os.path.dirname(file_path)}:/app",
+                "docker",
+                "run",
+                "--rm",
+                "--memory=256m",
+                "--cpus=1",
+                "-v",
+                f"{os.path.dirname(file_path)}:/app",
                 "python:3.12-slim",
-                "python", f"/app/{file_name}",
+                "python",
+                f"/app/{file_name}",
                 *args
             ],
             capture_output=True,
@@ -78,30 +306,54 @@ def run_python_docker(base_path: str, file_name: str, args=None, task_id=None, i
             timeout=10
         )
 
-    return {
-        "success": process.returncode == 0,
-        "stdout": process.stdout.strip(),
-        "stderr": process.stderr.strip(),
-        "return_code": process.returncode
-    }
+        stdout = process.stdout.strip()
+        stderr = process.stderr.strip()
 
-# =========================
-# 🔁 MAIN EXECUTION FLOW
-# =========================
-def run_python_file(base_path: str, file_name: str, args=None, task_id=None, is_repository=False):
+        return {
+            "success": process.returncode == 0,
+            "stdout": stdout,
+            "stderr": stderr,
+            "return_code": process.returncode
+        }
+
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False,
+            "stdout": "",
+            "stderr": "Execution timed out",
+            "return_code": 1
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "stdout": "",
+            "stderr": str(e),
+            "return_code": 1
+        }
+
+
+
+def run_python_file(base_path: str, file_name: str, args=None, task_id=None):
     """
-    Executes Python files via Docker.
-    Uses 'py_compile' for repository modules to prevent ImportErrors.
+    🚫 Docker disabled
+    ✅ Local execution with full logging
     """
-    log(task_id, f"🐳 Using Docker sandbox for: {file_name}")
 
-    result = run_python_docker(base_path, file_name, args, task_id, is_repository)
+    if args is None:
+        args = []
 
+    log(task_id, "🐳 Using Docker sandbox execution")
+
+    result = run_python_docker(base_path, file_name, args, task_id)
+
+    # ✅ LOG SUCCESS/FAILURE
     if result.get("return_code") == 0:
-        log(task_id, "✅ Validation passed")
+        log(task_id, "✅ Syntax validation passed")
     else:
-        log(task_id, "❌ Validation failed")
+        log(task_id, "❌ Code execution failed")
 
+    # ✅ CRITICAL FIX → RETURN return_code ALSO
     return {
         "used": "docker",
         "success": result.get("success"),
@@ -109,3 +361,20 @@ def run_python_file(base_path: str, file_name: str, args=None, task_id=None, is_
         "stderr": result.get("stderr"),
         "return_code": result.get("return_code")
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

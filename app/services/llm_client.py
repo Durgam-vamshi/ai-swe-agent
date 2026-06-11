@@ -132,6 +132,101 @@ FIXED_CODE:
 """
 
 
+def clean_response(text: str) -> str:
+    if not text:
+        return ""
+
+    text = text.replace("```python", "")
+    text = text.replace("```", "")
+    text = text.replace("\\n", "\n")
+
+    return text.strip()
+
+
+def normalize_response(response: str, file_name: str) -> str:
+    if not response:
+        return response
+
+    if "TARGET_FILE:" not in response:
+        return (
+            f"TARGET_FILE: {file_name}\n"
+            f"EXPLANATION:\nGenerated fix\n\n"
+            f"FIXED_CODE:\n{response}"
+        )
+
+    if "FIXED_CODE:" not in response:
+        return (
+            f"{response}\n\n"
+            f"FIXED_CODE:\n"
+        )
+
+    return response
+
+
+def call_llm(
+    prompt: str,
+    model="llama-3.1-8b-instant",
+    system_prompt=None,
+    task_id=None
+) -> str:
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": model,
+        "messages": [
+            {
+                "role": "system",
+                "content": system_prompt or STRICT_PROMPT
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "temperature": 0.2,
+        "max_tokens": 2500,
+        "stream": False
+    }
+
+    for attempt in range(3):
+
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            json=payload,
+            headers=headers,
+            timeout=60
+        )
+
+        if response.status_code == 429:
+
+            log(
+                task_id,
+                f"RATE_LIMIT model={model} attempt={attempt + 1}"
+            )
+
+            time.sleep(15)
+
+            continue
+
+        if response.status_code != 200:
+
+            raise Exception(
+                f"HTTP_{response.status_code}: {response.text}"
+            )
+
+        data = response.json()
+
+        return clean_response(
+            data["choices"][0]["message"]["content"]
+        )
+
+    raise Exception("RATE_LIMIT")
+
+
 
 def call_with_fallback(prompt: str, file_name: str, task_id=None) -> str:
     # 🔧 Added Prompt Size Guard

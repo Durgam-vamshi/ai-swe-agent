@@ -1,3 +1,18 @@
+
+---
+title: AI SWE Agent
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
+# AI SWE Agent
+
+Repository-aware AI software engineering agent.
+
+
 # 🚀 AI SWE Agent
 
 An autonomous repository-aware AI Software Engineering Agent capable of cloning GitHub repositories, localizing bugs, generating multi-file fixes using LLMs, validating changes, preventing regressions, and executing code safely inside Docker sandboxes.

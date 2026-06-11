@@ -136,6 +136,21 @@
 #             "reason": "Patch removed too much code"
 #         }
 
+#     # Line Delta Guard (Prevents sprawling hallucinations)
+#     original_lines = len(
+#         str(original_code).splitlines()
+#     )
+
+#     fixed_lines = len(
+#         str(fixed_code).splitlines()
+#     )
+
+#     if abs(fixed_lines - original_lines) > 200:
+#         return {
+#             "valid": False,
+#             "reason": "Patch changed too many lines"
+#         }
+
 #     # Prevent extra print statements
 #     original_prints = original_code.count(
 #         "print("
@@ -709,6 +724,20 @@ def validate_fix_scope(
                         f"{', '.join(sorted(removed_imports))}"
                     ),
                 }
+            
+            new_imports = (
+                fixed_imports
+                - original_imports
+            )
+
+            if len(new_imports) > 5:
+                return {
+                    "valid": False,
+                    "reason": (
+                        f"Too many imports added: "
+                        f"{', '.join(sorted(new_imports))}"
+                    ),
+                }
 
     except Exception as e:
         return {
@@ -723,6 +752,7 @@ def validate_fix_scope(
         "valid": True,
         "reason": "Validation passed.",
     }
+
 
 
 

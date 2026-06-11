@@ -1,5 +1,7 @@
 
 
+
+
 # import os
 # import re
 # import time
@@ -89,9 +91,22 @@
             
 #             normalized = normalize_response(response, file_name or ", ".join(target_files))
 #             parsed = parse_llm_response(normalized)
-#             parsed_files = parse_multi_file(parsed.get("fixed_code", ""))
+#             parsed_code_block = parsed.get("fixed_code", "")
+#             parsed_files = parse_multi_file(parsed_code_block)
 
-#             # Apply Full Overwrite
+#             # 🛡️ VALIDATION BEFORE OVERWRITE (CRITICAL PROTECTION)
+#             original_code = "\n\n".join(combined_code)
+#             validation = validate_fix_scope(original_code, parsed_code_block)
+
+#             if not validation.get("valid"):
+#                 log(
+#                     task_id,
+#                     f"❌ VALIDATION FAILED: {validation.get('reason')}"
+#                 )
+#                 attempt += 1
+#                 continue
+
+#             # Apply Full Overwrite safely now that validation has passed
 #             for filename, full_code in parsed_files.items():
 #                 target_path = os.path.join(base_path, filename)
 #                 with open(target_path, "w", encoding="utf-8") as f:
@@ -125,8 +140,6 @@
 #             attempt += 1
             
 #     return {"final_status": "failed"}
-
-
 
 
 
@@ -223,6 +236,15 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             parsed_code_block = parsed.get("fixed_code", "")
             parsed_files = parse_multi_file(parsed_code_block)
 
+            # 📏 PATCH SIZE PROTECTION
+            generated_code = parsed.get("fixed_code", "")
+            original_size = len("\n\n".join(combined_code))
+
+            if len(generated_code) > original_size * 1.5:
+                log(task_id, "❌ PATCH TOO LARGE")
+                attempt += 1
+                continue
+
             # 🛡️ VALIDATION BEFORE OVERWRITE (CRITICAL PROTECTION)
             original_code = "\n\n".join(combined_code)
             validation = validate_fix_scope(original_code, parsed_code_block)
@@ -231,6 +253,11 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
                 log(
                     task_id,
                     f"❌ VALIDATION FAILED: {validation.get('reason')}"
+                )
+                log(
+                    task_id,
+                    f"REJECTED_PATCH_PREVIEW:\n"
+                    f"{parsed.get('fixed_code', '')[:2000]}"
                 )
                 attempt += 1
                 continue
@@ -269,11 +296,6 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             attempt += 1
             
     return {"final_status": "failed"}
-
-
-
-
-
 
 
 

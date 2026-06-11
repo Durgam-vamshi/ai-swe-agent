@@ -105,6 +105,7 @@ def select_file(repo_path: str, issue: str):
     # 🔥 Build smart prompt
     prompt = build_smart_prompt(issue, file_data)
 
+
     # 🔥 Call LLM
     response = call_llm(prompt, model="phi3:mini")
 

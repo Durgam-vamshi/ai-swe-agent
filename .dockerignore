@@ -1,0 +1,10 @@
+@"
+.env
+.git
+__pycache__
+*.pyc
+repos
+sandbox
+.venv
+.pytest_cache
+"@ | Out-File .dockerignore

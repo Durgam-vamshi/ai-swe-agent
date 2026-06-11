@@ -20,16 +20,21 @@ import time
 
 # ✅ ADD THIS IMPORT (THIS IS YOUR BUG)
 from app.store.task_store import get_logs, get_task
-
+from typing import Optional
 
 
 router = APIRouter()
 
 
+# class AgentRequest(BaseModel):
+#     code: str
+#     issue: str
+#     file_name: str = "test.py"
+
 class AgentRequest(BaseModel):
-    code: str
     issue: str
-    file_name: str = "test.py"
+    code: Optional[str] = None
+    repo_url: Optional[str] = None
 
 
 class RepoRequest(BaseModel):

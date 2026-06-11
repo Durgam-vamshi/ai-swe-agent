@@ -105,7 +105,7 @@ ISSUE:
 CODE:
 {code}
 """
-
+    
     response = call_llm(
         prompt,
         system_prompt=TEST_PROMPT

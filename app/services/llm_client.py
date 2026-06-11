@@ -1,6 +1,5 @@
 
 
-
 # import os
 # import re
 # import time
@@ -148,6 +147,10 @@
 # Rules:
 # - Fix only the bug.
 # - Keep changes minimal.
+# - Do NOT rewrite entire files.
+# - Return only the minimal change required.
+# - Preserve all existing code.
+# - Modify only the exact buggy lines.
 # - Do not create files.
 # - Do not remove existing functions.
 # - Return only the required format.
@@ -272,7 +275,6 @@
 # ) -> str:
 #     prompt = build_prompt(issue, code, file_name, error, context)
 #     return call_with_fallback(prompt, file_name, task_id=task_id)
-
 
 
 
@@ -423,13 +425,19 @@ RUNTIME ERROR:
 Rules:
 - Fix only the bug.
 - Keep changes minimal.
-- Do NOT rewrite entire files.
-- Return only the minimal change required.
 - Preserve all existing code.
-- Modify only the exact buggy lines.
 - Do not create files.
 - Do not remove existing functions.
 - Return only the required format.
+
+CRITICAL PATCH RULES:
+1. Modify only the exact buggy lines.
+2. Preserve all surrounding code.
+3. Never regenerate entire source files.
+4. Never create placeholder code.
+5. Never shorten the file.
+6. Return the original code unchanged if the bug cannot be proven.
+7. If more than 20 lines would change, return the original code unchanged.
 
 TARGET_FILE:
 {file_name}
@@ -551,9 +559,6 @@ def generate_fix(
 ) -> str:
     prompt = build_prompt(issue, code, file_name, error, context)
     return call_with_fallback(prompt, file_name, task_id=task_id)
-
-
-
 
 
 

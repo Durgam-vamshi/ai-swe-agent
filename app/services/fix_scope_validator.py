@@ -1,3 +1,5 @@
+
+
 # import ast
 # import re
 
@@ -122,6 +124,18 @@
 #             ),
 #         }
 
+#     # ----------------------
+#     # A. Reject Massive Rewrites
+#     # ----------------------
+#     original_len = len(str(original_code))
+#     fixed_len = len(str(fixed_code))
+
+#     if fixed_len < original_len * 0.5:
+#         return {
+#             "valid": False,
+#             "reason": "Patch removed too much code"
+#         }
+
 #     # Prevent extra print statements
 #     original_prints = original_code.count(
 #         "print("
@@ -179,15 +193,14 @@
 #                 "default": fixed_code
 #             }
 
-#         # Prevent creation of new files
+#         # ----------------------
+#         # B. Reject New Files
+#         # ----------------------
 #         for filename in fixed_files:
 #             if filename not in original_files:
 #                 return {
 #                     "valid": False,
-#                     "reason": (
-#                         f"New file introduced: "
-#                         f"{filename}"
-#                     ),
+#                     "reason": f"New file introduced: {filename}"
 #                 }
 
 #         for filename, fixed_content in fixed_files.items():
@@ -220,7 +233,6 @@
 #             # ----------------------
 #             # Function Validation
 #             # ----------------------
-
 #             original_functions = (
 #                 get_function_signatures(
 #                     original_tree
@@ -269,9 +281,8 @@
 #                     }
 
 #             # ----------------------
-#             # Class Validation
+#             # C. Class Validation
 #             # ----------------------
-
 #             original_classes = (
 #                 get_class_names(
 #                     original_tree
@@ -300,9 +311,8 @@
 #                 }
 
 #             # ----------------------
-#             # Import Validation
+#             # D. Import Validation
 #             # ----------------------
-
 #             original_imports = (
 #                 get_imports(
 #                     original_tree
@@ -343,9 +353,6 @@
 #         "valid": True,
 #         "reason": "Validation passed.",
 #     }
-
-
-
 
 
 import ast
@@ -482,6 +489,21 @@ def validate_fix_scope(
         return {
             "valid": False,
             "reason": "Patch removed too much code"
+        }
+
+    # Line Delta Guard (Prevents sprawling hallucinations)
+    original_lines = len(
+        str(original_code).splitlines()
+    )
+
+    fixed_lines = len(
+        str(fixed_code).splitlines()
+    )
+
+    if abs(fixed_lines - original_lines) > 200:
+        return {
+            "valid": False,
+            "reason": "Patch changed too many lines"
         }
 
     # Prevent extra print statements
@@ -701,9 +723,6 @@ def validate_fix_scope(
         "valid": True,
         "reason": "Validation passed.",
     }
-
-
-
 
 
 

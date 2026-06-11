@@ -73,9 +73,9 @@
 #             "return_code": 1
 #         }
 
+
 # def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
 #     try:
-
 #         if args is None:
 #             args = []
 
@@ -130,13 +130,12 @@
 #             "return_code": 1
 #         }
 
+
 # def run_repo_tests(base_path: str, task_id=None):
 #     """
-#     Run repository test suite inside Docker.
+#     Run repository test suite inside Docker using pytest -q.
 #     """
-
 #     try:
-
 #         log(task_id, "🧪 Running repository tests")
 
 #         commands = [
@@ -145,9 +144,7 @@
 #         ]
 
 #         for cmd in commands:
-
 #             try:
-
 #                 process = subprocess.run(
 #                     [
 #                         "docker",
@@ -167,12 +164,23 @@
 #                     timeout=120
 #                 )
 
-#                 stdout = process.stdout.strip()
-#                 stderr = process.stderr.strip()
+#                 stdout = process.stdout.strip() if process.stdout else ""
+#                 stderr = process.stderr.strip() if process.stderr else ""
+
+#                 # 📊 CRITICAL LOGGING ADDITIONS
+#                 log(
+#                     task_id,
+#                     f"TEST RETURN CODE={process.returncode}"
+#                 )
 
 #                 log(
 #                     task_id,
-#                     f"🧪 TEST RETURN CODE: {process.returncode}"
+#                     f"TEST STDOUT:\n{stdout[:1000]}"
+#                 )
+
+#                 log(
+#                     task_id,
+#                     f"TEST STDERR:\n{stderr[:1000]}"
 #                 )
 
 #                 return {
@@ -193,7 +201,6 @@
 #         }
 
 #     except Exception as e:
-
 #         return {
 #             "success": False,
 #             "stdout": "",
@@ -201,12 +208,11 @@
 #             "return_code": 1
 #         }
 
+
 # def run_python_file(base_path: str, file_name: str, args=None, task_id=None):
 #     """
-#     🚫 Docker disabled
-#     ✅ Local execution with full logging
+#     🐳 Sandbox execution orchestration
 #     """
-
 #     if args is None:
 #         args = []
 
@@ -228,8 +234,6 @@
 #         "stderr": result.get("stderr"),
 #         "return_code": result.get("return_code")
 #     }
-
-
 
 
 
@@ -368,72 +372,80 @@ def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
 
 def run_repo_tests(base_path: str, task_id=None):
     """
-    Run repository test suite inside Docker using pytest -q.
+    Run repository test suite inside Docker using python -m pytest -q.
     """
     try:
         log(task_id, "🧪 Running repository tests")
 
-        commands = [
-            ["pytest", "-q"],
-            ["python", "-m", "pytest", "-q"],
-        ]
+        # Configured to use module mode exclusively since pytest binary is missing on baseline slims
+        cmd = ["python", "-m", "pytest", "-q"]
 
-        for cmd in commands:
-            try:
-                process = subprocess.run(
-                    [
-                        "docker",
-                        "run",
-                        "--rm",
-                        "--memory=512m",
-                        "--cpus=1",
-                        "-v",
-                        f"{os.path.abspath(base_path)}:/repo",
-                        "-w",
-                        "/repo",
-                        "python:3.12-slim",
-                        *cmd
-                    ],
-                    capture_output=True,
-                    text=True,
-                    timeout=120
-                )
+        log(task_id, f"TEST COMMAND={cmd}")
 
-                stdout = process.stdout.strip() if process.stdout else ""
-                stderr = process.stderr.strip() if process.stderr else ""
+        try:
+            process = subprocess.run(
+                [
+                    "docker",
+                    "run",
+                    "--rm",
+                    "--memory=512m",
+                    "--cpus=1",
+                    "-v",
+                    f"{os.path.abspath(base_path)}:/repo",
+                    "-w",
+                    "/repo",
+                    "python:3.12-slim",
+                    *cmd
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120
+            )
 
-                # 📊 CRITICAL LOGGING ADDITIONS
-                log(
-                    task_id,
-                    f"TEST RETURN CODE={process.returncode}"
-                )
+            stdout = process.stdout.strip() if process.stdout else ""
+            stderr = process.stderr.strip() if process.stderr else ""
 
-                log(
-                    task_id,
-                    f"TEST STDOUT:\n{stdout[:1000]}"
-                )
+            # 📊 CRITICAL LOGGING ADDITIONS
+            log(
+                task_id,
+                f"TEST RETURN CODE={process.returncode}"
+            )
 
-                log(
-                    task_id,
-                    f"TEST STDERR:\n{stderr[:1000]}"
-                )
+            log(
+                task_id,
+                f"TEST STDOUT:\n{stdout[:1000]}"
+            )
 
-                return {
-                    "success": process.returncode == 0,
-                    "stdout": stdout,
-                    "stderr": stderr,
-                    "return_code": process.returncode
-                }
+            log(
+                task_id,
+                f"TEST STDERR:\n{stderr[:1000]}"
+            )
 
-            except Exception:
-                continue
+            # Diagnostic additions for payload size sizing analysis
+            log(
+                task_id,
+                f"TEST STDOUT LENGTH={len(stdout)}"
+            )
 
-        return {
-            "success": False,
-            "stdout": "",
-            "stderr": "Unable to execute pytest",
-            "return_code": 1
-        }
+            log(
+                task_id,
+                f"TEST STDERR LENGTH={len(stderr)}"
+            )
+
+            return {
+                "success": process.returncode == 0,
+                "stdout": stdout,
+                "stderr": stderr,
+                "return_code": process.returncode
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "stdout": "",
+                "stderr": f"Subprocess exception: {str(e)}",
+                "return_code": 1
+            }
 
     except Exception as e:
         return {

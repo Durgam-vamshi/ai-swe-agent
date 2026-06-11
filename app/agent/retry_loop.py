@@ -1,6 +1,5 @@
 
 
-
 # import os
 # import re
 # import time
@@ -108,6 +107,12 @@
 #                 # Repository test mode execution loop wrapper
 #                 result = run_repo_tests(base_path, task_id)
             
+#             # Check test execution status parameters explicitly
+#             if result.get("return_code") != 0:
+#                 log(task_id, "❌ Repository tests failed")
+#                 attempt += 1
+#                 continue
+                
 #             if result.get("return_code") == 0:
 #                 return {
 #                     "final_status": "success", 
@@ -118,8 +123,9 @@
 #         except Exception as e:
 #             log(task_id, f"💥 CRASH: {str(e)}")
 #             attempt += 1
-
+            
 #     return {"final_status": "failed"}
+
 
 
 
@@ -214,9 +220,22 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             
             normalized = normalize_response(response, file_name or ", ".join(target_files))
             parsed = parse_llm_response(normalized)
-            parsed_files = parse_multi_file(parsed.get("fixed_code", ""))
+            parsed_code_block = parsed.get("fixed_code", "")
+            parsed_files = parse_multi_file(parsed_code_block)
 
-            # Apply Full Overwrite
+            # 🛡️ VALIDATION BEFORE OVERWRITE (CRITICAL PROTECTION)
+            original_code = "\n\n".join(combined_code)
+            validation = validate_fix_scope(original_code, parsed_code_block)
+
+            if not validation.get("valid"):
+                log(
+                    task_id,
+                    f"❌ VALIDATION FAILED: {validation.get('reason')}"
+                )
+                attempt += 1
+                continue
+
+            # Apply Full Overwrite safely now that validation has passed
             for filename, full_code in parsed_files.items():
                 target_path = os.path.join(base_path, filename)
                 with open(target_path, "w", encoding="utf-8") as f:
@@ -250,13 +269,6 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             attempt += 1
             
     return {"final_status": "failed"}
-
-
-
-
-
-
-
 
 
 

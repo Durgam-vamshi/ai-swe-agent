@@ -1,4 +1,3 @@
-
 # import os
 # import re
 # import time
@@ -38,17 +37,20 @@
 #     # Investigation Detection
 #     INVESTIGATION_WORDS = ["investigate", "identify", "locate", "analyze"]
 #     if any(word in issue.lower() for word in INVESTIGATION_WORDS):
-#         log(task_id, f"🔍 Investigation task detected: {target_files}")
-#         return {"final_status": "investigation_complete", "target_files": target_files}
+#         log(
+#             task_id, 
+#             f"🔍 Investigation complete. Target files identified: {target_files}"
+#         )
+#         return {
+#             "final_status": "investigation_complete", 
+#             "target_files": target_files
+#         }
 
-#     # Execution Loop
 #     attempt = 1
-#     last_fixed_code = None
 #     while attempt <= max_retries:
 #         try:
 #             if task_id: increment_attempt(task_id)
             
-#             # Prepare context
 #             combined_code, context = [], {}
 #             for target in target_files:
 #                 path = os.path.join(base_path, target)
@@ -66,7 +68,7 @@
 #             for filename, full_code in parsed_files.items():
 #                 target_path = os.path.join(base_path, filename)
 #                 with open(target_path, "w", encoding="utf-8") as f:
-#                     f.write(full_code) # Full replacement
+#                     f.write(full_code) 
 #                 log(task_id, f"✅ Fully overwritten: {filename}")
 
 #             # Verify (Run test)
@@ -82,7 +84,6 @@
 #             attempt += 1
 
 #     return {"final_status": "failed"}
-
 
 
 import os
@@ -111,7 +112,7 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
     if not base_path:
         return {"final_status": "failed", "error": "Missing base path"}
 
-    # Discovery
+    # 1. Discovery
     if kwargs.get("code") and file_name:
         target_files = [file_name]
         with open(os.path.join(base_path, file_name), "w", encoding="utf-8") as f:
@@ -121,7 +122,7 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
     
     target_files = target_files[:MAX_FILES]
 
-    # Investigation Detection
+    # 2. Early Return for Investigation
     INVESTIGATION_WORDS = ["investigate", "identify", "locate", "analyze"]
     if any(word in issue.lower() for word in INVESTIGATION_WORDS):
         log(
@@ -133,7 +134,7 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             "target_files": target_files
         }
 
-    # Execution Loop
+    # 3. Execution Loop (Repair Mode Only)
     attempt = 1
     while attempt <= max_retries:
         try:
@@ -147,6 +148,9 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
                     content = f.read()[:MAX_FILE_CHARS]
                 combined_code.append(f"# FILE: {target}\n{content}")
                 context[target] = build_repository_context(target_file=path, base_path=base_path)
+            
+            # Debug log only visible in repair mode
+            log(task_id, f"DEBUG current_code_length={len(''.join(combined_code))}")
 
             # Generate and Parse Fix
             response = generate_fix(issue=issue, code="\n\n".join(combined_code), file_name=", ".join(target_files), context=context, task_id=task_id)
@@ -157,7 +161,7 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             for filename, full_code in parsed_files.items():
                 target_path = os.path.join(base_path, filename)
                 with open(target_path, "w", encoding="utf-8") as f:
-                    f.write(full_code) # Full replacement
+                    f.write(full_code)
                 log(task_id, f"✅ Fully overwritten: {filename}")
 
             # Verify (Run test)
@@ -173,9 +177,6 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             attempt += 1
 
     return {"final_status": "failed"}
-
-
-
 
 
 

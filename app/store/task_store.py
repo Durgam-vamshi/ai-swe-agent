@@ -1,8 +1,5 @@
 
 
-
-
-
 # import json
 # import os
 # import uuid
@@ -16,20 +13,45 @@
 # tasks = {}
 
 # # =========================
-# # 💾 PERSISTENCE
+# # 💾 PERSISTENCE (FIXED)
 # # =========================
 # def save_tasks():
-#     with open(TASK_FILE, "w") as f:
-#         json.dump(tasks, f)
+#     with open(
+#         TASK_FILE,
+#         "w",
+#         encoding="utf-8"
+#     ) as f:
+#         json.dump(
+#             tasks,
+#             f,
+#             indent=2
+#         )
+
 
 # def load_tasks():
 #     global tasks
-#     if os.path.exists(TASK_FILE):
-#         with open(TASK_FILE, "r") as f:
-#             tasks = json.load(f)
 
-# # Load existing data on startup
+#     if not os.path.exists(TASK_FILE):
+#         tasks = {}
+#         return
+
+#     try:
+#         with open(TASK_FILE, "r", encoding="utf-8") as f:
+#             content = f.read().strip()
+
+#             if not content:
+#                 tasks = {}
+#                 return
+
+#             tasks = json.loads(content)
+
+#     except Exception:
+#         tasks = {}
+
+
+# # Load existing data safely on startup
 # load_tasks()
+
 
 # # =========================
 # # 🆕 CREATE TASK
@@ -57,7 +79,7 @@
 
 
 # # =========================
-# # 🔄 UPDATE TASK (FIXED)
+# # 🔄 UPDATE TASK
 # # =========================
 # def update_task(task_id, data=None, **kwargs):
 #     if task_id not in tasks:
@@ -114,6 +136,11 @@
 
 
 
+
+
+
+
+
 import json
 import os
 import uuid
@@ -161,10 +188,6 @@ def load_tasks():
 
     except Exception:
         tasks = {}
-
-
-# Load existing data safely on startup
-load_tasks()
 
 
 # =========================
@@ -249,13 +272,11 @@ def get_all_tasks():
     return list(tasks.values())
 
 
-
-
-
-
-
-
-
+# =========================
+# 🚀 INITIALIZATION
+# =========================
+# Load existing data safely on startup
+load_tasks()
 
 
 

@@ -1,14 +1,15 @@
 
 
+
 # import os
 # import re
 # import time
-# from app.utils.logger import log
 # import requests
 # from dotenv import load_dotenv
-
+# from app.utils.logger import log
 # from app.services.context_builder import build_repository_context
 
+# # Load environment variables
 # load_dotenv()
 # GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
@@ -38,6 +39,37 @@
 # - FIXED_CODE must be MULTI-LINE with each line on a new line.
 # """
 
+# def clean_response(text: str) -> str:
+#     if not text:
+#         return ""
+
+#     text = text.replace("```python", "")
+#     text = text.replace("```", "")
+#     text = text.replace("\\n", "\n")
+
+#     return text.strip()
+
+
+# def normalize_response(response: str, file_name: str) -> str:
+#     if not response:
+#         return response
+
+#     if "TARGET_FILE:" not in response:
+#         return (
+#             f"TARGET_FILE: {file_name}\n"
+#             f"EXPLANATION:\nGenerated fix\n\n"
+#             f"FIXED_CODE:\n{response}"
+#         )
+
+#     if "FIXED_CODE:" not in response:
+#         return (
+#             f"{response}\n\n"
+#             f"FIXED_CODE:\n"
+#         )
+
+#     return response
+
+
 # def build_prompt(
 #     issue: str,
 #     code: str,
@@ -49,7 +81,6 @@
 #     context_text = ""
 
 #     if context:
-
 #         context_blocks = []
 
 #         if not any(
@@ -59,7 +90,6 @@
 #             context = {file_name: context}
 
 #         for fname, ctx in context.items():
-
 #             imports_str = ", ".join(
 #                 ctx.get("imports", [])[:10]
 #             ) or "None"
@@ -132,37 +162,6 @@
 # """
 
 
-# def clean_response(text: str) -> str:
-#     if not text:
-#         return ""
-
-#     text = text.replace("```python", "")
-#     text = text.replace("```", "")
-#     text = text.replace("\\n", "\n")
-
-#     return text.strip()
-
-
-# def normalize_response(response: str, file_name: str) -> str:
-#     if not response:
-#         return response
-
-#     if "TARGET_FILE:" not in response:
-#         return (
-#             f"TARGET_FILE: {file_name}\n"
-#             f"EXPLANATION:\nGenerated fix\n\n"
-#             f"FIXED_CODE:\n{response}"
-#         )
-
-#     if "FIXED_CODE:" not in response:
-#         return (
-#             f"{response}\n\n"
-#             f"FIXED_CODE:\n"
-#         )
-
-#     return response
-
-
 # def call_llm(
 #     prompt: str,
 #     model="llama-3.1-8b-instant",
@@ -193,7 +192,6 @@
 #     }
 
 #     for attempt in range(3):
-
 #         response = requests.post(
 #             "https://api.groq.com/openai/v1/chat/completions",
 #             json=payload,
@@ -202,18 +200,14 @@
 #         )
 
 #         if response.status_code == 429:
-
 #             log(
 #                 task_id,
 #                 f"RATE_LIMIT model={model} attempt={attempt + 1}"
 #             )
-
 #             time.sleep(15)
-
 #             continue
 
 #         if response.status_code != 200:
-
 #             raise Exception(
 #                 f"HTTP_{response.status_code}: {response.text}"
 #             )
@@ -225,7 +219,6 @@
 #         )
 
 #     raise Exception("RATE_LIMIT")
-
 
 
 # def call_with_fallback(prompt: str, file_name: str, task_id=None) -> str:
@@ -272,8 +265,6 @@
 #         time.sleep(0.5)
 
 #     raise Exception(f"❌ All models failed. Last error: {last_error}")
-
-
 
 
 # def generate_fix(
@@ -432,6 +423,10 @@ RUNTIME ERROR:
 Rules:
 - Fix only the bug.
 - Keep changes minimal.
+- Do NOT rewrite entire files.
+- Return only the minimal change required.
+- Preserve all existing code.
+- Modify only the exact buggy lines.
 - Do not create files.
 - Do not remove existing functions.
 - Return only the required format.
@@ -556,11 +551,6 @@ def generate_fix(
 ) -> str:
     prompt = build_prompt(issue, code, file_name, error, context)
     return call_with_fallback(prompt, file_name, task_id=task_id)
-
-
-
-
-
 
 
 

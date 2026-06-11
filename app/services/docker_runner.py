@@ -233,8 +233,6 @@
 
 
 
-
-
 import subprocess
 import os
 import re
@@ -401,12 +399,23 @@ def run_repo_tests(base_path: str, task_id=None):
                     timeout=120
                 )
 
-                stdout = process.stdout.strip()
-                stderr = process.stderr.strip()
+                stdout = process.stdout.strip() if process.stdout else ""
+                stderr = process.stderr.strip() if process.stderr else ""
+
+                # 📊 CRITICAL LOGGING ADDITIONS
+                log(
+                    task_id,
+                    f"TEST RETURN CODE={process.returncode}"
+                )
 
                 log(
                     task_id,
-                    f"🧪 TEST RETURN CODE: {process.returncode}"
+                    f"TEST STDOUT:\n{stdout[:1000]}"
+                )
+
+                log(
+                    task_id,
+                    f"TEST STDERR:\n{stderr[:1000]}"
                 )
 
                 return {
@@ -460,12 +469,3 @@ def run_python_file(base_path: str, file_name: str, args=None, task_id=None):
         "stderr": result.get("stderr"),
         "return_code": result.get("return_code")
     }
-
-
-
-
-
-
-
-
-

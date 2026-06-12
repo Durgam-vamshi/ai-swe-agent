@@ -1,4 +1,7 @@
 
+
+
+
 import os
 import re
 import time
@@ -12,29 +15,28 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 STRICT_PROMPT = """
-You are an expert software engineer working in an advanced Multi-File Workspace Engine environment.
-You MUST follow this STRICT output format EXACTLY. Do not deviate under any circumstance.
+You are an expert software engineer.
+
+VERY IMPORTANT RULES:
+
+- DO NOT rewrite entire files.
+- ONLY modify the exact buggy lines.
+- Preserve 100% of existing code.
+- Return ONLY changed functions/classes.
+- Never regenerate full files.
+- Never truncate code.
+- Never invent code outside target bug.
+
+OUTPUT FORMAT:
 
 TARGET_FILE:
-<file path or list of active paths>
+<file path>
 
 EXPLANATION:
 <brief explanation>
 
 FIXED_CODE:
-<complete fixed code content block>
-
-RULES FOR MULTI-FILE EDITING:
-- If modifying multiple files, you MUST partition each file inside the FIXED_CODE section using the exact syntax:
-  # FILE: filename.py
-  <source code here>
-  # FILE: second_file.py
-  <source code here>
-- Do NOT add extra conversation or chit-chat text.
-- Do NOT explain outside sections.
-- Do NOT use markdown code blocks like ``` or ```python inside FIXED_CODE.
-- ONLY return raw code.
-- FIXED_CODE must be MULTI-LINE with each line on a new line.
+<ONLY changed code block>
 """
 
 def clean_response(text: str) -> str:
@@ -66,7 +68,6 @@ def normalize_response(response: str, file_name: str) -> str:
         )
 
     return response
-
 
 def build_prompt(
     issue: str,
@@ -145,29 +146,30 @@ RUNTIME ERROR:
 
 Rules:
 - Fix only the bug.
-- Keep changes minimal.
+- Change as few lines as possible.
+- NEVER rewrite the entire file.
+- NEVER truncate code.
+- NEVER use placeholders.
+- NEVER output comments like:
+  # rest of code unchanged
+  # omitted code
+  ...
 - Preserve all existing code.
-- Do not create files.
-- Do not remove existing functions.
-- Return only the required format.
+- Modify only exact buggy lines.
+- Return syntactically valid Python only.
+- Do not create new files.
+- Do not remove functions/classes.
 
-CRITICAL PATCH RULES:
-1. Modify ONLY the exact buggy lines.
-2. Preserve ALL surrounding code.
-3. NEVER regenerate entire source files.
-4. NEVER rewrite files from the beginning.
-5. If a file exceeds 200 lines, return only the modified function.
-6. If the bug cannot be proven from the supplied code, return the original code unchanged.
-7. If more than 20 lines would change, return the original code unchanged.
-8. Do not invent attributes, methods, classes or imports.
+Return format:
 
 TARGET_FILE:
 {file_name}
 
 EXPLANATION:
-<brief explanation>
+brief explanation
 
 FIXED_CODE:
+Only changed code sections.
 """
 
 
@@ -196,7 +198,7 @@ def call_llm(
             }
         ],
         "temperature": 0.2,
-        "max_tokens": 2500,
+        "max_tokens": 1200,
         "stream": False
     }
 
@@ -238,7 +240,7 @@ def call_with_fallback(prompt: str, file_name: str, task_id=None) -> str:
         log(task_id, f"💥 CRASH: {error_msg}")
         raise Exception(error_msg)
 
-    models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile"]
+    models = ["llama-3.3-70b-versatile"]
     last_error = None
 
     for model in models:
@@ -281,8 +283,6 @@ def generate_fix(
 ) -> str:
     prompt = build_prompt(issue, code, file_name, error, context)
     return call_with_fallback(prompt, file_name, task_id=task_id)
-
-
 
 
 

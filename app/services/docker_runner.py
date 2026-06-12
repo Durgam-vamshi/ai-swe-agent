@@ -1,3 +1,5 @@
+
+
 # import subprocess
 # import os
 # import re
@@ -133,72 +135,88 @@
 
 # def run_repo_tests(base_path: str, task_id=None):
 #     """
-#     Run repository test suite inside Docker using pytest -q.
+#     Run repository test suite inside Docker using python -m pytest -q.
 #     """
 #     try:
 #         log(task_id, "🧪 Running repository tests")
 
-#         commands = [
-#             ["pytest", "-q"],
-#             ["python", "-m", "pytest", "-q"],
-#         ]
+#         cmd = ["python", "-m", "pytest", "-q"]
 
-#         for cmd in commands:
-#             try:
-#                 process = subprocess.run(
-#                     [
-#                         "docker",
-#                         "run",
-#                         "--rm",
-#                         "--memory=512m",
-#                         "--cpus=1",
-#                         "-v",
-#                         f"{os.path.abspath(base_path)}:/repo",
-#                         "-w",
-#                         "/repo",
-#                         "python:3.12-slim",
-#                         *cmd
-#                     ],
-#                     capture_output=True,
-#                     text=True,
-#                     timeout=120
-#                 )
+#         log(task_id, f"TEST COMMAND={cmd}")
 
-#                 stdout = process.stdout.strip() if process.stdout else ""
-#                 stderr = process.stderr.strip() if process.stderr else ""
+#         try:
+#             process = subprocess.run(
+#                 [
+#                     "docker",
+#                     "run",
+#                     "--rm",
+#                     "--memory=512m",
+#                     "--cpus=1",
+#                     "-v",
+#                     f"{os.path.abspath(base_path)}:/repo",
+#                     "-w",
+#                     "/repo",
+#                     "python:3.12-slim",
+#                     *cmd
+#                 ],
+#                 capture_output=True,
+#                 text=True,
+#                 timeout=120
+#             )
 
-#                 # 📊 CRITICAL LOGGING ADDITIONS
-#                 log(
-#                     task_id,
-#                     f"TEST RETURN CODE={process.returncode}"
-#                 )
+#             stdout = process.stdout.strip() if process.stdout else ""
+#             stderr = process.stderr.strip() if process.stderr else ""
 
-#                 log(
-#                     task_id,
-#                     f"TEST STDOUT:\n{stdout[:1000]}"
-#                 )
+#             # 📊 CRITICAL LOGGING ADDITIONS
+#             log(
+#                 task_id,
+#                 f"TEST RETURN CODE={process.returncode}"
+#             )
 
-#                 log(
-#                     task_id,
-#                     f"TEST STDERR:\n{stderr[:1000]}"
-#                 )
+#             log(
+#                 task_id,
+#                 f"TEST STDOUT:\n{stdout[:1000]}"
+#             )
 
-#                 return {
-#                     "success": process.returncode == 0,
-#                     "stdout": stdout,
-#                     "stderr": stderr,
-#                     "return_code": process.returncode
-#                 }
+#             log(
+#                 task_id,
+#                 f"TEST STDERR:\n{stderr[:1000]}"
+#             )
 
-#             except Exception:
-#                 continue
+#             # Diagnostic additions for payload size sizing analysis
+#             log(
+#                 task_id,
+#                 f"TEST STDOUT LENGTH={len(stdout)}"
+#             )
 
-#         return {
-#             "success": False,
-#             "stdout": "",
-#             "stderr": "Unable to execute pytest",
-#             "return_code": 1
-#         }
+#             log(
+#                 task_id,
+#                 f"TEST STDERR LENGTH={len(stderr)}"
+#             )
+
+#             log(task_id, f"TEST RETURN CODE={process.returncode}")
+
+# if stdout:
+#     log(task_id, f"TEST STDOUT:\n{stdout[:1500]}")
+
+# if stderr:
+#     log(task_id, f"TEST STDERR:\n{stderr[:1500]}")
+
+#             return {
+                
+#                 "success": process.returncode == 0,
+#                 "stdout": stdout,
+#                 "stderr": stderr,
+#                 "return_code": process.returncode
+#             }
+
+#         except Exception as e:
+#             return {
+#                 "success": False,
+#                 "stdout": "",
+#                 "stderr": f"Subprocess exception: {str(e)}",
+#                 "return_code": 1
+#             }
 
 #     except Exception as e:
 #         return {
@@ -236,13 +254,11 @@
 #     }
 
 
-
 import subprocess
 import os
 import re
 from app.utils.logger import log
 import tempfile
-
 
 def extract_missing_module(stderr: str):
     match = re.search(r"No module named '(.+?)'", stderr)
@@ -250,14 +266,10 @@ def extract_missing_module(stderr: str):
         return match.group(1)
     return None
 
-
 def run_python_local(base_path: str, file_name: str, args=None, task_id=None):
     try:
         file_path = os.path.join(base_path, file_name)
-
-        if args is None:
-            args = []
-
+        args = args or []
         log(task_id, f"⚙️ Running local file: {file_name}")
 
         process = subprocess.run(
@@ -267,84 +279,12 @@ def run_python_local(base_path: str, file_name: str, args=None, task_id=None):
             timeout=5
         )
 
-        stdout = process.stdout.strip() if process.stdout else ""
-        stderr = process.stderr.strip() if process.stderr else ""
-        return_code = process.returncode
-
-        # ✅ LOGS
-        if stdout:
-            log(task_id, f"💻 STDOUT:\n{stdout}")
-        else:
-            log(task_id, "💻 STDOUT: (empty)")
-
-        if stderr:
-            log(task_id, f"💻 STDERR:\n{stderr}")
-        else:
-            log(task_id, "💻 STDERR: (empty)")
-
-        log(task_id, f"💻 RETURN CODE: {return_code}")
-
-        # ✅ CRITICAL FIX → ALWAYS RETURN return_code
-        return {
-            "success": return_code == 0,
-            "stdout": stdout,
-            "stderr": stderr,
-            "return_code": return_code
-        }
-
-    except subprocess.TimeoutExpired:
-        log(task_id, "⏱️ Execution timed out")
-
-        return {
-            "success": False,
-            "stdout": "",
-            "stderr": "Execution timed out",
-            "return_code": 1
-        }
-
-    except Exception as e:
-        log(task_id, f"💥 Execution error: {str(e)}")
-
-        return {
-            "success": False,
-            "stdout": "",
-            "stderr": str(e),
-            "return_code": 1
-        }
-
-
-def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
-    try:
-        if args is None:
-            args = []
-
-        file_path = os.path.abspath(
-            os.path.join(base_path, file_name)
-        )
-
-        log(task_id, f"🐳 Running in Docker: {file_name}")
-
-        process = subprocess.run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "--memory=256m",
-                "--cpus=1",
-                "-v",
-                f"{os.path.dirname(file_path)}:/app",
-                "python:3.12-slim",
-                "python",
-                f"/app/{file_name}",
-                *args
-            ],
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
-
-        stdout = process.stdout.strip()
-        stderr = process.stderr.strip()
+        stdout = process.stdout.strip() if process.stdout else "(empty)"
+        stderr = process.stderr.strip() if process.stderr else "(empty)"
+        
+        log(task_id, f"💻 STDOUT:\n{stdout}")
+        log(task_id, f"💻 STDERR:\n{stderr}")
+        log(task_id, f"💻 RETURN CODE: {process.returncode}")
 
         return {
             "success": process.returncode == 0,
@@ -352,132 +292,82 @@ def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
             "stderr": stderr,
             "return_code": process.returncode
         }
-
-    except subprocess.TimeoutExpired:
-        return {
-            "success": False,
-            "stdout": "",
-            "stderr": "Execution timed out",
-            "return_code": 1
-        }
-
     except Exception as e:
-        return {
-            "success": False,
-            "stdout": "",
-            "stderr": str(e),
-            "return_code": 1
-        }
+        log(task_id, f"💥 Execution error: {str(e)}")
+        return {"success": False, "stdout": "", "stderr": str(e), "return_code": 1}
 
+def run_python_docker(base_path: str, file_name: str, args=None, task_id=None):
+    try:
+        args = args or []
+        file_path = os.path.abspath(os.path.join(base_path, file_name))
+        log(task_id, f"🐳 Running in Docker: {file_name}")
+
+        process = subprocess.run(
+            [
+                "docker", "run", "--rm", "--memory=256m", "--cpus=1",
+                "-v", f"{os.path.dirname(file_path)}:/app",
+                "python:3.12-slim", "python", f"/app/{file_name}", *args
+            ],
+            capture_output=True, text=True, timeout=10
+        )
+
+        return {
+            "success": process.returncode == 0,
+            "stdout": process.stdout.strip(),
+            "stderr": process.stderr.strip(),
+            "return_code": process.returncode
+        }
+    except Exception as e:
+        return {"success": False, "stdout": "", "stderr": str(e), "return_code": 1}
 
 def run_repo_tests(base_path: str, task_id=None):
-    """
-    Run repository test suite inside Docker using python -m pytest -q.
-    """
+    """Run repository test suite inside Docker."""
+    log(task_id, "🧪 Running repository tests")
+    cmd = ["python", "-m", "pytest", "-q"]
+
     try:
-        log(task_id, "🧪 Running repository tests")
+        process = subprocess.run(
+            [
+                "docker", "run", "--rm", "--memory=512m", "--cpus=1",
+                "-v", f"{os.path.abspath(base_path)}:/repo",
+                "-w", "/repo", "python:3.12-slim", *cmd
+            ],
+            capture_output=True, text=True, timeout=120
+        )
 
-        # Configured to use module mode exclusively since pytest binary is missing on baseline slims
-        cmd = ["python", "-m", "pytest", "-q"]
+        stdout = process.stdout.strip()
+        stderr = process.stderr.strip()
 
-        log(task_id, f"TEST COMMAND={cmd}")
+        # Log diagnostics
+        log(task_id, f"TEST RETURN CODE={process.returncode}")
+        log(task_id, f"TEST STDOUT LENGTH={len(stdout)}")
+        log(task_id, f"TEST STDERR LENGTH={len(stderr)}")
+        
+        if stdout:
+            log(task_id, f"TEST STDOUT:\n{stdout[:1500]}")
+        if stderr:
+            log(task_id, f"TEST STDERR:\n{stderr[:1500]}")
 
-        try:
-            process = subprocess.run(
-                [
-                    "docker",
-                    "run",
-                    "--rm",
-                    "--memory=512m",
-                    "--cpus=1",
-                    "-v",
-                    f"{os.path.abspath(base_path)}:/repo",
-                    "-w",
-                    "/repo",
-                    "python:3.12-slim",
-                    *cmd
-                ],
-                capture_output=True,
-                text=True,
-                timeout=120
-            )
-
-            stdout = process.stdout.strip() if process.stdout else ""
-            stderr = process.stderr.strip() if process.stderr else ""
-
-            # 📊 CRITICAL LOGGING ADDITIONS
-            log(
-                task_id,
-                f"TEST RETURN CODE={process.returncode}"
-            )
-
-            log(
-                task_id,
-                f"TEST STDOUT:\n{stdout[:1000]}"
-            )
-
-            log(
-                task_id,
-                f"TEST STDERR:\n{stderr[:1000]}"
-            )
-
-            # Diagnostic additions for payload size sizing analysis
-            log(
-                task_id,
-                f"TEST STDOUT LENGTH={len(stdout)}"
-            )
-
-            log(
-                task_id,
-                f"TEST STDERR LENGTH={len(stderr)}"
-            )
-
-            return {
-                "success": process.returncode == 0,
-                "stdout": stdout,
-                "stderr": stderr,
-                "return_code": process.returncode
-            }
-
-        except Exception as e:
-            return {
-                "success": False,
-                "stdout": "",
-                "stderr": f"Subprocess exception: {str(e)}",
-                "return_code": 1
-            }
-
-    except Exception as e:
         return {
-            "success": False,
-            "stdout": "",
-            "stderr": str(e),
-            "return_code": 1
+            "success": process.returncode == 0,
+            "stdout": stdout,
+            "stderr": stderr,
+            "return_code": process.returncode
         }
-
+    except Exception as e:
+        return {"success": False, "stdout": "", "stderr": f"Subprocess exception: {str(e)}", "return_code": 1}
 
 def run_python_file(base_path: str, file_name: str, args=None, task_id=None):
-    """
-    🐳 Sandbox execution orchestration
-    """
-    if args is None:
-        args = []
-
+    """🐳 Sandbox execution orchestration"""
     log(task_id, "🐳 Using Docker sandbox execution")
+    result = run_python_docker(base_path, file_name, args or [], task_id)
 
-    result = run_python_docker(base_path, file_name, args, task_id)
-
-    # ✅ LOG SUCCESS/FAILURE
-    if result.get("return_code") == 0:
+    if result["return_code"] == 0:
         log(task_id, "✅ Syntax validation passed")
     else:
         log(task_id, "❌ Code execution failed")
 
-    # ✅ CRITICAL FIX → RETURN return_code ALSO
     return {
         "used": "docker",
-        "success": result.get("success"),
-        "stdout": result.get("stdout"),
-        "stderr": result.get("stderr"),
-        "return_code": result.get("return_code")
+        **result
     }

@@ -127,6 +127,7 @@ def run_agent(base_path=None, file_name=None, issue=None, max_retries=3, task_id
             if skip_write:
                 continue
 
+            # Apply Full Overwrite safely
             for filename, full_code in parsed_files.items():
                 target_path = os.path.join(base_path, filename)
                 with open(target_path, "w", encoding="utf-8") as f:
